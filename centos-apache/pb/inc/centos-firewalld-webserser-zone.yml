@@ -1,0 +1,52 @@
+- name: Enable firewalld
+  service: name=firewalld state=started enabled=yes
+
+- name: Add webserver zone
+  firewalld:
+    zone: webserver
+    state: present
+    permanent: yes
+
+- name: Restart firewalld to apply new zones
+  service: name=firewalld state=restarted
+
+- name: Set webserver as default policy
+  command: firewall-cmd --set-default-zone=webserver
+
+- name: Add interface to webserver zone
+  firewalld:
+    zone: webserver
+    interface: "{{ item }}"
+    permanent: yes
+    state: enabled
+  with_items: "{{ ansible_interfaces }}"
+
+- name: Allow ping
+  command: "{{ item }}"
+  with_items:
+  - firewall-cmd --zone=webserver --permanent --add-icmp-block-inversion
+  - firewall-cmd --zone=webserver --permanent --add-icmp-block=echo-request
+
+- name: Allow ssh
+  firewalld:
+    zone: webserver
+    service: ssh
+    permanent: yes
+    state: enabled
+
+- name: Allow http
+  firewalld:
+    zone: webserver
+    service: http
+    permanent: yes
+    state: enabled
+
+- name: Allow https
+  firewalld:
+    zone: webserver
+    service: https
+    permanent: yes
+    state: enabled
+
+- name: Restart firewalld to apply new zones
+  service: name=firewalld state=restarted
