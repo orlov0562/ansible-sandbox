@@ -1,0 +1,10 @@
+- name: List remote interfaces
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+  - name: find interface facts
+    debug:
+      msg: "{{ item }}"
+    with_items: "{{ ansible_interfaces }}"
