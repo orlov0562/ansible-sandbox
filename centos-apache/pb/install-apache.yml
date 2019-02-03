@@ -1,0 +1,18 @@
+- name: Install apache
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  vars:
+    def_src_file: "../public_html"
+    def_dest_dir: "/var/www/html"
+
+  tasks:
+
+  - include: inc/install-apache.yml
+  - include: inc/centos-firewalld-webserser-zone.yml
+  - include: inc/upload-public-html.yml
+
+  handlers:
+  - name: Restart Apache
+    service: name=httpd state=restarted
