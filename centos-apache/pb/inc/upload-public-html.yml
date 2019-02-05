@@ -4,5 +4,5 @@
     state: absent
 
 - name: Copy default page to webserver directory
-  copy: src="{{ def_src_file }}/" dest="{{ def_dest_dir }}/" directory_mode=yes mode=0644 owner=apache group=apache
+  copy: src="{{ def_src_file }}/" dest="{{ def_dest_dir }}/" mode=0644 directory_mode=0755 owner=apache group=apache
   notify: Restart Apache

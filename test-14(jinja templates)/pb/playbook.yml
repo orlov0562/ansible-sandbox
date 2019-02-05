@@ -5,6 +5,7 @@
 
   vars:
     src_dir: ../public_html
+    j2_dir: ../public_html_j2
     dst_dir: /var/www/html
 
   # === ^^vars^^
@@ -37,41 +38,32 @@
 
     when: ansible_os_family == "Debian"
 
-  - name: Copy files
-    copy:
-        src={{src_dir}}/{{item}}
-        dest={{dst_dir}}
-        mode=0644
-    with_items:
-        - index.html
-        - about.html
-
-  - name: Copy directory with mask
-    copy:
-        src={{item}}
-        dest={{dst_dir}}/js/
-        mode=0644
-    with_fileglob: "{{src_dir}}/js/*.js"
-
   - name: Copy directory recursively
     copy:
-        src={{src_dir}}/media/
-        dest={{dst_dir}}/media/
-        mode=0644
-        directory_mode=0755
-    notify:
-    - Restart Apache RedHat
-    - Restart Apache Debian
+        src={{src_dir}}/
+        dest={{dst_dir}}/
 
-  # === ^^tasks^^
+  - name: Compile templates
+    template:
+        src={{j2_dir}}/{{item}}
+        dest={{dst_dir}}/{{(item|splitext)[0]}}.html
+    with_items:
+        - index.j2
 
-  handlers:
-  - name: Restart Apache RedHat
-    service: name=httpd state=restarted
+  - name: Set owner of webserver dir and file
+    file:
+        path={{dst_dir}}/
+        recurse=yes
+        owner=apache
+        group=apache
     when: ansible_os_family == "RedHat"
 
-  - name: Restart Apache Debian
-    service: name=apache2 state=restarted
+  - name: Set owner of webserver dir and file
+    file:
+        path={{dst_dir}}/
+        recurse=yes
+        owner=www-data
+        group=www-data
     when: ansible_os_family == "Debian"
 
-  # === ^^handlers^^
+  # === ^^tasks^^

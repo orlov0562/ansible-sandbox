@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>Hello world!</title>
+    <link rel="stylesheet" href="media/style.css">
+</head>
+<body>
+    <a href="index.html">Index</a>
+    <a href="about.html">About</a>
+    <hr>
+    <h1>Hello world!</h1>
+    <p>The website just created real content comming soon.</p>
+
+    <h2>Info</h2>
+    <ul>
+        <li>Owner: {{ owner }}</li>
+        <li>Hostname: {{ ansible_hostname }}</li>
+        <li>FQDN: {{ ansible_fqdn }}</li>
+        <li>OS family: {{ ansible_os_family }}</li>
+        <li>OS family: {{ ansible_default_ipv4.address }}</li>
+    </ul>
+</body>
+</html>
