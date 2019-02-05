@@ -1,0 +1,12 @@
+- name: My playbook
+  hosts: "{{ APPLY_TO_HOSTS }}"
+  become: yes
+  become_method: sudo
+
+  # === ^^vars^^
+
+  roles:
+  - role: ../roles/deploy_apache_web
+    when: ansible_system =='Linux'
+
+  # === ^^roles^^
