@@ -1,2 +1,2 @@
 ansible_user     : root
-ansible_password : rootroot
+ansible_password : <password>
