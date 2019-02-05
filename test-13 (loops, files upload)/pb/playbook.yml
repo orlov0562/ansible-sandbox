@@ -1,4 +1,4 @@
-- name: My Test vars playbook
+- name: My playbook
   hosts: all
   become: yes
   become_method: sudo

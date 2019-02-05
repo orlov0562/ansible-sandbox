@@ -1,0 +1,10 @@
+[local-redhat]
+test01 ansible_host=192.168.100.153 owner=test01
+test02 ansible_host=192.168.100.152 owner=test02
+
+[local-ubuntu]
+test03 ansible_host=192.168.100.149 owner=test03
+
+[local:children]
+local-redhat
+local-ubuntu

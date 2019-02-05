@@ -1,0 +1,56 @@
+---
+# tasks file for deploy_apache_web
+
+- name: Check and print linux version
+  debug: var=ansible_os_family
+
+- block: # Block for RedHat
+
+  - name: Stop firewall
+    service: name=firewalld state=stopped enabled=false
+
+  - name: Install Apache Web Server for RedHat
+    yum: name=httpd state=latest
+
+  - name: Run Apache Web Server for RedHat
+    service: name=httpd state=started enabled=yes
+
+  when: ansible_os_family == "RedHat"
+
+- block: # Block for Debian
+
+  - name: Install Apache Web Server for Debian
+    apt: name=apache2 state=latest
+
+  - name: Run Apache Web Server for Debian
+    service: name=apache2 state=started enabled=yes
+
+  when: ansible_os_family == "Debian"
+
+- name: Copy directory recursively
+  copy:
+    src=./
+    dest={{dst_dir}}/
+
+- name: Compile templates
+  template:
+    src={{item}}
+    dest={{dst_dir}}/{{(item|splitext)[0]}}.html
+  with_items:
+    - index.j2
+
+- name: Set owner of webserver dir and file
+  file:
+    path={{dst_dir}}/
+    recurse=yes
+    owner=apache
+    group=apache
+  when: ansible_os_family == "RedHat"
+
+- name: Set owner of webserver dir and file
+  file:
+    path={{dst_dir}}/
+    recurse=yes
+    owner=www-data
+    group=www-data
+  when: ansible_os_family == "Debian"
