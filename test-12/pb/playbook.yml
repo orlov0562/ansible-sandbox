@@ -1,0 +1,67 @@
+- name: My Test vars playbook
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    src_file: ../public_html/index.html
+    dst_dir: /var/www/html
+
+  # === ^^vars^^
+
+  tasks:
+
+  - name: Check and print linux version
+    debug: var=ansible_os_family
+
+  - block: # Block for RedHat
+
+    - name: Stop firewall
+      service: name=firewalld state=stopped enabled=false
+
+    - name: Install Apache Web Server for RedHat
+      yum: name=httpd state=latest
+
+    - name: Copy Homepage
+      copy:
+        src={{src_file}}
+        dest={{dst_dir}}
+        mode=0644
+        owner=apache
+        group=apache
+      notify: Restart Apache RedHat
+
+    - name: Run Apache Web Server for RedHat
+      service: name=httpd state=started enabled=yes
+
+    when: ansible_os_family == "RedHat"
+
+  - block: # Block for Debian
+
+    - name: Install Apache Web Server for Debian
+      apt: name=apache2 state=latest
+
+    - name: Copy Homepage
+      copy:
+        src={{src_file}}
+        dest={{dst_dir}}
+        mode=0644
+        owner=www-data
+        group=www-data
+      notify: Restart Apache Debian
+
+    - name: Run Apache Web Server for Debian
+      service: name=apache2 state=started enabled=yes
+
+    when: ansible_os_family == "Debian"
+
+  # === ^^tasks^^
+
+  handlers:
+  - name: Restart Apache RedHat
+    service: name=httpd state=restarted
+
+  - name: Restart Apache Debian
+    service: name=apache2 state=restarted
+
+  # === ^^handlers^^

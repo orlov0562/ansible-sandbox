@@ -1,0 +1,38 @@
+- name: My Test vars playbook
+  hosts: all
+  become: yes
+
+  vars:
+    message_1: Hello
+    message_2: World
+    message_3: abc
+
+  tasks:
+
+  - name: Print Hello
+    debug:
+      var: message_1
+
+  - name: Print Hello 2
+    debug:
+      msg: "Message 1: {{ message_1 }}"
+
+  - name: Print Owner
+    debug:
+      msg: "Owner: {{ owner }}"
+
+  - name: Concatenation
+    set_fact: full_message="{{ message_1 }} {{ message_2 }} from {{ owner }}"
+
+  - name: Print Hello from Owner
+    debug:
+      msg: "{{ full_message }}"
+
+  - debug:
+      var: ansible_distribution
+
+  - shell: uptime
+    register: uptime_results
+
+  - debug:
+      var: uptime_results.stdout

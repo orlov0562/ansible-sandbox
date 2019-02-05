@@ -1,0 +1,14 @@
+- name: My Test vars playbook
+  hosts: all
+  become: yes
+
+  vars:
+    message_1: Hello
+    message_2: World
+    message_3: abc
+
+  tasks:
+
+  - name: Print Hello
+    debug:
+      var: message_1
