@@ -1,0 +1,77 @@
+- name: My Test vars playbook
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    src_dir: ../public_html
+    dst_dir: /var/www/html
+
+  # === ^^vars^^
+
+  tasks:
+
+  - name: Check and print linux version
+    debug: var=ansible_os_family
+
+  - block: # Block for RedHat
+
+    - name: Stop firewall
+      service: name=firewalld state=stopped enabled=false
+
+    - name: Install Apache Web Server for RedHat
+      yum: name=httpd state=latest
+
+    - name: Run Apache Web Server for RedHat
+      service: name=httpd state=started enabled=yes
+
+    when: ansible_os_family == "RedHat"
+
+  - block: # Block for Debian
+
+    - name: Install Apache Web Server for Debian
+      apt: name=apache2 state=latest
+
+    - name: Run Apache Web Server for Debian
+      service: name=apache2 state=started enabled=yes
+
+    when: ansible_os_family == "Debian"
+
+  - name: Copy files
+    copy:
+        src={{src_dir}}/{{item}}
+        dest={{dst_dir}}
+        mode=0644
+    with_items:
+        - index.html
+        - about.html
+
+  - name: Copy directory with mask
+    copy:
+        src={{item}}
+        dest={{dst_dir}}/js/
+        mode=0644
+    with_fileglob: "{{src_dir}}/js/*.js"
+
+  - name: Copy directory recursively
+    copy:
+        src={{src_dir}}/media/
+        dest={{dst_dir}}/media/
+        mode=0644
+        directory_mode=yes
+    notify:
+    - Restart Apache RedHat
+    - Restart Apache Debian
+
+  # === ^^tasks^^
+
+  handlers:
+  - name: Restart Apache RedHat
+    service: name=httpd state=restarted
+    when: ansible_os_family == "RedHat"
+
+  - name: Restart Apache Debian
+    service: name=apache2 state=restarted
+    when: ansible_os_family == "Debian"
+
+  # === ^^handlers^^

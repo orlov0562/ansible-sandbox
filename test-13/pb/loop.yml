@@ -1,0 +1,29 @@
+- name: My Test vars playbook
+  hosts: local-ubuntu
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Loop test
+    debug: msg="Hello {{item}}"
+    with_items: # or "loop"
+    - "John"
+    - "Cassandra"
+
+  - name: Loop install test
+    yum: name={{item}} state=present
+    loop:
+    - mc
+    - htop
+
+  - name: Until test
+    shell: echo -n Z >> file.txt && cat file.txt
+    register: output
+    delay: 1 # in seconds
+    retries: 5 # 3 by default
+    until: output.stdout.find("ZZZZ") == false
+
+  - name: Print output
+    debug: var=output.stdout
+
