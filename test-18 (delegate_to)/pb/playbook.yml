@@ -1,0 +1,53 @@
+- name: My playbook
+  hosts: all
+  become: yes
+
+  vars:
+    mytext: "Privet"
+
+  tasks:
+
+  - name: Print Hello
+    debug:
+      msg: "Hello world executed once (on first server)"
+    run_once: true
+
+  - name: Ping servers
+    ping:
+
+  - name: Some action
+    shell: echo Some action log, server:{{inventory_hostname}}, node:{{ansible_nodename}} >> ../delegate-to.log
+    become: no
+    delegate_to: 127.0.0.1
+
+  - name: Create file 1
+    copy:
+      dest: /tmp/test-file-1.txt
+      content: |
+        Text line 1, in file 1
+        Text line 2, in file 1
+        Text line 3, {{ mytext }}
+    delegate_to: test01 # apply only to server [name]
+
+  - name: Create file 2
+    copy:
+      dest: /tmp/test-file-2.txt
+      content: |
+        Text line 1, in file 2
+        Text line 2, in file 2
+        Text line 3, {{ mytext }}
+    delegate_to: test03 # apply only to server [name]
+
+  - name: Reboot my servers
+    shell: sleep 3 && reboot now
+    async: 4
+    poll: 0
+
+  - name: Wait till my server will come up online
+    wait_for:
+        host: "{{ inventory_hostname }}"
+        state: started
+        delay: 15
+        timeout: 60
+    become: no
+    delegate_to: 127.0.0.1
