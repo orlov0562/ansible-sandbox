@@ -1,0 +1,16 @@
+- name: Create file
+  copy:
+    dest: /tmp/test-17-dir-1/test-file-1.txt
+    content: |
+        Text line 1, in file 1
+        Text line 2, in file 1
+        Text line 3, {{ mytext }}
+
+
+- name: Create file
+  copy:
+    dest: /tmp/test-17-dir-1/test-file-2.txt
+    content: |
+        Text line 1, in file 2
+        Text line 2, in file 2
+        Text line 3, {{ mytext }}

@@ -1,0 +1,24 @@
+- name: My playbook
+  hosts: all
+  become: yes
+
+  vars:
+    mytext: "Privet"
+
+  tasks:
+
+  - name: Print Hello
+    debug:
+      msg: "Hello world"
+
+  - name: Ping servers
+    ping:
+
+  # import = include contents on parsing stage
+  # include = include contents on execution stage
+
+  - name: "Create folders"
+    include: _create_folders.yml # <-- doesn't work if change "include" to "import", some strange parsing error
+
+  - name: "Create files"
+    include: _create_files.yml mytext="Hello"
