@@ -1,0 +1,21 @@
+ ansible-vault create secret.txt
+
+ ansible-vault view secret.txt
+
+ ansible-vault edit secret.txt
+
+ ansible-vault rekey secret.txt # = Change password in encrypted file / playbook
+
+ ansible-vault encrypt secret.txt # = Encrypt existed file / playbook
+
+ ansible-vault decrypt secret.txt # = Decrypt existed file / playbook
+
+ ansible-playbook pb/playbook.yml --ask-vault-pass # = Run encrypted playbook with password input
+
+ ansible-playbook pb/playbook.yml --vault-password-file=vault-pass.txt # = Run encrypted playbook with password from file
+
+ ansible-vault encrypt_string # = Encrypt string to use in playbook
+
+ ansible-vault encrypt_string --stdin-name "MyPassword" # = Encrypt string to use in playbook
+
+ echo -n "<password>" | ansible-vault encrypt-string # = Encrypt string to use in playbook

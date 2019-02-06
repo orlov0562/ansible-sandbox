@@ -1,0 +1,28 @@
+- name: My playbook
+  hosts: local-ubuntu
+  become: yes
+
+  vars:
+    admin_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36376132323561386166383234623432393939663139623335656538613239616234373837636663
+          3035346465633637643133373262666365323863303163660a323863303966336530323036306233
+          39303534373263633464386466353565353365356137623338646431346433303432306264666436
+          3461626335656261390a393661666438343464313238383561346563393265626234626139343838
+          3031
+
+  tasks:
+
+  - name: Install package tree
+    apt: name=tree state=present
+
+  - name: Create config file
+    copy:
+        dest: /tmp/ansible-20-config.conf
+        content: |
+            port = 9092
+            log  = 7 days
+            home = /opt/service/
+            user = root
+            password = {{ admin_password }}
+
