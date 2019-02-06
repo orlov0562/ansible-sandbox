@@ -1,0 +1,36 @@
+- name: My playbook
+  hosts: local-redhat
+  any_errors_fatal: true # break executuion on any error
+  become: yes
+  gather_facts: true
+
+  tasks:
+
+  - name: Task 1
+    yum: name=treeeee state=latest
+    ignore_errors: yes
+
+  - name: Task 2
+    shell: echo Hello world
+    register: results
+    failed_when: "'John' in results.stdout"
+
+  - name: Task 2a
+    shell: echo Hello world
+    register: results
+    failed_when: results.rc != 0 # rc = return code
+
+  - debug:
+        var: ansible_all_ipv4_addresses
+
+  - name: Task 2b
+    fail: msg="Wrong ip address"
+    when: ansible_all_ipv4_addresses[0] != "192.168.100.148"
+
+  # below will not be executed due to "any_errors_fatal=true" and error in "Task 2b"
+
+  - debug:
+        var: results
+
+  - name: Task 3
+    shell: echo PingPong!
