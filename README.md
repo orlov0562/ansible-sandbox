@@ -1,3 +1,3 @@
 # ansible-sandbox
-It's just sandbox for my tests of Ansible
+Just an ansible sandbox
 
